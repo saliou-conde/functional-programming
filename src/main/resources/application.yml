@@ -1,0 +1,59 @@
+server:
+  port: 8085
+  error:
+    include-message: always
+    include-binding-errors: always
+    #whitelabel:
+    #  enabled: false
+## In the case that the current micro-service communicates with another micro-service and logs of the micro-services are needed.
+##eureka:
+##  client:
+##    register-with-eureka: true
+##    fetch-registry: true
+##    service-url:
+##      defaultZone: localhost:8761/eureka/
+##  instance:
+##    hostname: localhost
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10000000MB
+      max-request-size: 10000000MB
+  application:
+    name: USER-SERVICE
+  datasource:
+    username: ${datasource_username}
+    password: ${datasource_password}
+    #url: jdbc:h2:mem:test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    #url: jdbc:h2:file:D:\Private\database\database\database
+    url: jdbc:postgresql://localhost:5432/postgres?useSSL=false
+    pool-size: 30
+    #driverClassName: org.h2.Driver
+    #  dbcp.test-while-idle: true
+    #  dbcp.time-between-eviction-runs-millis: 3600000
+    #  dbcp.validation-query: SELECT 1
+  jpa:
+    #database: H2
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+  #mvc:
+  #  throw-exception-if-no-handler-found: true
+  #resources:
+  #  add-mappings: false
+
+springdoc:
+  swagger-ui:
+    path: /docs/api.html
+  api-docs:
+    path: /docs
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+  file:
+    path: ${user.home}/logs
