@@ -27,7 +27,7 @@ spring:
     password: ${datasource_password}
     #url: jdbc:h2:mem:test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     #url: jdbc:h2:file:D:\Private\database\database\database
-    url: jdbc:postgresql://localhost:5432/postgres?useSSL=false
+    url: jdbc:postgresql://localhost:5432/employee?useSSL=false
     pool-size: 30
     #driverClassName: org.h2.Driver
     #  dbcp.test-while-idle: true

@@ -16,7 +16,7 @@ import java.util.Date;
 @Builder
 @Data
 @Entity
-@Table(name = "employee")
+@Table(name = "_employee")
 public class Employee {
     @Id
     private String id;

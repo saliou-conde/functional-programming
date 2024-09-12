@@ -16,26 +16,22 @@ public class Interview {
         return fibonacci(n-1) + fibonacci(n-2);
     }
 
-    public static boolean isIsogram(String input) {
-        //Codedecode
-        //Pen
+    public static boolean isIsogramm(String input) {
         StringBuilder sb = new StringBuilder(input.toLowerCase());
         String [] array = sb.toString().split("");
         Map<String, Integer> map = new HashMap<>();
         boolean result = false;
-        for (int i = 0; i < array.length; i++) {
-            String key = array[i];
-            if(map.get(key) == null) {
+        for (String key : array) {
+            if (map.get(key) == null) {
                 map.put(key, 1);
                 result = true;
-            }
-            else {
-                int value = map.get(key);
-                map.put(key, value+1);
+            } else {
+                map.put(key, map.get(key) + 1);
                 result = false;
                 break;
             }
         }
+
         return result;
     }
 

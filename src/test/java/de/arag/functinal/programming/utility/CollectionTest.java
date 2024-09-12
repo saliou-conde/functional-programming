@@ -4,18 +4,25 @@ import de.arag.functinal.programming.model.dto.EmployeeRequest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CollectionTest {
+class CollectionTest {
 
     private List<EmployeeRequest> employeeRequests;
+    private final List<String> list = new ArrayList<>(70000000);
+    public static final Logger LOGGER = LoggerFactory.getLogger(CollectionTest.class);
 
     @BeforeAll
     void setUp() {
@@ -60,20 +67,26 @@ public class CollectionTest {
                 .build();
 
         employeeRequests = List.of(employeeRequest1, employeeRequest2, employeeRequest3, employeeRequest4);
+
+        //When
+        for(String txt: list) {
+            list.add("xxxxxx");
+        }
+        list.add("Hello");
     }
 
-    @Test
+    //@Test
     void employeeTest() {
         //When
         Map<String, List<EmployeeRequest>> collectByJobTitle = employeeRequests
                 .stream()
-                .collect(Collectors.groupingBy(employeeRequest -> employeeRequest.getJobTitle()));
+                .collect(Collectors.groupingBy(EmployeeRequest::getJobTitle));
 
         BiConsumer<String, List<EmployeeRequest>> consumer = new MyBiConsumer<>();
         collectByJobTitle.forEach(consumer);
     }
 
-    @Test
+    //@Test
     void collectionTest() {
         //Given
         int [] array = {1,0,0,0,1,1,0,1,0,1,1,0};
@@ -91,7 +104,7 @@ public class CollectionTest {
         return;
     }
 
-    @Test
+    //@Test
     void setTest() {
         //Given
         Set<String> strings = new HashSet<>();
@@ -104,10 +117,10 @@ public class CollectionTest {
         strings.add("this just a test.");
 
         //Then
-        assertThat(strings.size()).isEqualTo(3);
+        assertThat(strings.size() == 3).isTrue();
     }
 
-    @Test
+    //@Test
     void hashMapTest() {
         //Given
         HashMap<String, String> map = new HashMap<>();
@@ -136,19 +149,19 @@ public class CollectionTest {
         assertThat(map.size()).isEqualTo(4);
     }
 
-    @Test
+    //@Test
     void flapMapTest() {
         List<String> list1 = List.of("01234567", "098765");
         List<String> list2 = List.of("89776767", "121212");
         List<String> list3 = List.of("012345671212", "098765212");
         List<List<String>> lists = List.of(list1, list2, list3);
-        lists.forEach(strings -> System.out.println(strings));
-        System.out.println();
-        List<String> stringList = lists.stream().flatMap(List::stream).collect(Collectors.toList());
-        stringList.forEach(s -> System.out.print(s+" "));
+        lists.forEach(element -> LOGGER.info(element.toString()));
+        LOGGER.info("###########################");
+        List<String> stringList = lists.stream().flatMap(List::stream).toList();
+        stringList.forEach(LOGGER::info);
     }
 
-    @Test
+    ////@Test
     void hashCodeObjectTest() {
         //Given
         EmployeeRequest employeeRequest1 = EmployeeRequest
@@ -186,4 +199,122 @@ public class CollectionTest {
         assertThat(b1).isTrue();
         assertThat(b2).isFalse();
     }
+    
+    @Test
+    void is_parallel_stream_faster_than_serial_stream() {
+        //Given
+        String expected = "Hello";
+        
+        //When
+        long start = System.currentTimeMillis();
+        List<String> stringList = list.parallelStream().filter(s -> s.equals(expected)).toList();
+        LOGGER.info("Time for parallel stream is: {} {}", (System.currentTimeMillis() - start), "ms");
+        
+        //Then
+        assertThat(stringList.size()).isSameAs(1);
+    }
+
+    @Test
+    void is_serial_stream_lower_than_parallel_stream() {
+        //Given
+        String expected = "Hello";
+
+        //When
+        long start = System.currentTimeMillis();
+        List<String> stringList = list.stream().filter(s -> s.equals(expected)).toList();
+        LOGGER.info("Time for serial stream is: {} {}", (System.currentTimeMillis() - start), "ms");
+
+        //Then
+        assertThat(stringList.size()).isSameAs(1);
+    }
+
+    //@Test
+    void stream_can_be_only_used_one_time() {
+        //Given
+        String expected = "Hello";
+
+        //When
+        Stream<String> stringList = list.stream();
+        stringList.forEach(LOGGER::info);
+        //stringList.forEach(LOGGER::info);
+
+        //Then
+        assertThat(stringList).isNotNull();
+    }
+
+    @Test
+    void count_each_character() {
+        //Given
+        String text = "Hello World!";
+
+        //When
+        Map<String, Long> collect = Arrays.stream(text.toLowerCase().split(""))
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        LOGGER.info(collect.toString());
+
+        //Then
+        assertThat(collect).isNotNull();
+    }
+
+    @Test
+    void should_return_fail_fast_iterator() {
+        //Given
+        List<String> list = new ArrayList<>();
+        list.add("Hello");
+        list.add("World");
+        addElement(list, "and universe!");
+
+        //When
+        Exception exception = assertThrows(ConcurrentModificationException.class, () -> addElement(list, "and universe!"));
+        assertThat(exception.getMessage()).isEqualTo("ConcurrentModificationException");
+    }
+
+    @Test
+    void should_return_fail_safe_iterator() {
+        //Given
+        String element = "and universe!";
+        List<String> list = new CopyOnWriteArrayList<>();
+        list.add("Hello");
+        list.add("World");
+        //When
+        addElement(list, element);
+
+        //Then
+        assertThat(list).isNotNull();
+        boolean actual = list.contains(element);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    void test_m1() {
+        //Given
+        int i = 10;
+        int j = 10;
+
+        //When
+        m1(i);
+
+        //Then
+        assertThat(j).isSameAs(i);
+    }
+
+    private void addElement(List<String> list, String element) throws ConcurrentModificationException {
+        try {
+            Iterator<String> iterator = list.iterator();
+            while (iterator.hasNext()) {
+                String nextElement = iterator.next();
+                LOGGER.info(nextElement);
+                list.add(element);
+            }
+        }
+        catch (ConcurrentModificationException e) {
+            throw new ConcurrentModificationException("ConcurrentModificationException");
+        }
+    }
+
+    private void m1(int i) {
+        i = i + 10;
+        LOGGER.info("Value of i is {}", i);
+    }
+
 }

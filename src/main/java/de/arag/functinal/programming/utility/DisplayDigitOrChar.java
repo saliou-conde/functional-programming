@@ -1,11 +1,14 @@
 package de.arag.functinal.programming.utility;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.lang.Thread.sleep;
 
+@Slf4j
 public class DisplayDigitOrChar {
 
     public static void main(String[] args) throws InterruptedException {
@@ -15,37 +18,34 @@ public class DisplayDigitOrChar {
         Runnable digit = () -> {
             List<String> digits = list
                     .stream()
-                    .filter(e -> Pattern.matches("[a-zA-Z]+", e) == true)
-                    .collect(Collectors.toList());
-            //digits.forEach(el -> System.out.println(el));
-
-            for (String str:digits
-                 ) {
-                System.out.println(str);
+                    .filter(e -> Pattern.matches("[a-zA-Z]+", e))
+                    .toList();
+            digits.forEach(el -> {
+                log.info(el);
                 try {
                     sleep(2000);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    log.warn(e.getMessage());
+                    Thread.currentThread().interrupt();
                 }
-            }
+            });
         };
 
         Runnable character = () -> {
             List<String> letters = list
                     .stream()
-                    .filter(e -> Pattern.matches("[a-zA-Z]+", e) == false)
-                    .collect(Collectors.toList());
-            //letters.forEach(el -> System.out.println(el));
-
-            for (String str:letters
-            ) {
-                System.out.println(str);
+                    .filter(e -> !Pattern.matches("[a-zA-Z]+", e))
+                    .toList();
+            letters.forEach(el -> {
+                log.info(el);
                 try {
                     sleep(2000);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    log.warn(e.getMessage());
+                    Thread.currentThread().interrupt();
                 }
-            }
+
+            });
         };
 
         Thread thread1 = new Thread(digit);

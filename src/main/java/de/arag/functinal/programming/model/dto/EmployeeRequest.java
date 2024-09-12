@@ -18,5 +18,4 @@ public class EmployeeRequest {
     private String jobTitle;
     private Boolean isActive;
 
-
 }
