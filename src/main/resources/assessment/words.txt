@@ -1,0 +1,3 @@
+Java ist eine objektorientierte Programmiersprache.
+Java wird häufig für Webentwicklung, Mobile Apps und Backend verwendet.
+Java ist weit verbreitet.

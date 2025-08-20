@@ -5,7 +5,7 @@ package de.arag.functinal.programming.utility;
 // (powered by FernFlower decompiler)
 //
 
-package ch.sbb.tms.capaopt.techstack.architecturetests.rules;
+//package ch.sbb.tms.capaopt.techstack.architecturetests.rules;
 
 import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.lang.ArchCondition;
